@@ -17,6 +17,9 @@ var spotifyKeys = new Spotify(keys.spotifyKeys);
 // node package for rquest 
 var request = require('request');
 
+// node package for require
+var fs = require("fs");
+
 // twitter function
 var myTweets = function () {
   // variable to access the twitter node keys in our .env file
@@ -63,7 +66,7 @@ var getMySpotify = function (songName) {
       }
     });
 }
-// "apikey=cf60627e"
+
 var getMovie = function (movie) {
   request('http://www.omdbapi.com/?t=' + movie + '&y=&plot=short&tomatoes=true&r=json', function (error, response, body) {
     if (!error && response.statusCode === 200) {
@@ -71,7 +74,7 @@ var getMovie = function (movie) {
       console.log('Title: ' + jsonData.Title);
       console.log('Year: ' + jsonData.Year);
       console.log('IMDB Rating: ' + jsonData.imbdRating);
-      console.log('Rotten Tomatoes Rating: ' + jsonData.Ratings.Source[1]);
+      console.log('Rotten Tomatoes Rating: ' + jsonData.Ratings.Value[1]);
       console.log('Country: ' + jsonData.Country);
       console.log('Language: ' + jsonData.Language);
       console.log('Plot: ' + jsonData.Plot);
@@ -81,6 +84,19 @@ var getMovie = function (movie) {
   });
 }
 
+var doWhatItSays = function() {
+fs.readFile('random.txt', 'utf8', function(err, data) {
+  if (err) throw err;
+  
+  var dataArr = data.split(',');
+    if(dataArr.length == 2) {
+      pick(dataArr[0], dataArr[1]);
+    } else if (dataArr.length == 1) {
+      pick(dataArr[0]);
+    }
+});
+};
+
 // function to grab tweets when user requests
 var pick = function (caseData, functionData) {
   switch (caseData) {
@@ -89,12 +105,16 @@ var pick = function (caseData, functionData) {
       break;
 
     case 'spotify-this-song':
-      getMySpotify();
+      getMySpotify(functionData);
       break;
 
     case 'movie-this':
       getMovie(functionData);
       break;
+
+    case 'do-what-it-says':
+    doWhatItSays();
+    break;
     default:
       console.log("Liri does not know this!")
   }
